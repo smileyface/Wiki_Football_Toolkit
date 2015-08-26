@@ -1,0 +1,109 @@
+{{AmFootballScoreSummaryStart|VisitorName=Utah State|HomeName=Auburn}}
+{{AmFootballScoreSummaryEntry
+| Quarter=1
+| Time=10:30
+| Team=Auburn
+| DrivePlays=3
+| DriveLength=64
+| DriveTime=1:03
+| Type=RushTD
+| Runner=Kerwynn Williams 
+| yards=43
+| kickresult=good
+| Kicker=Josh Thompson 
+| Visitor=7
+| Home=7
+}}
+{{AmFootballScoreSummaryEntry
+| Quarter=1
+| Time=01:32
+| Team=
+| DrivePlays=15
+| DriveLength=80
+| DriveTime=7:27
+| Type=RushTD
+| Runner=Chuckie Keeton 
+| yards=3
+| kickresult=good
+| Kicker=Josh Thompson 
+| Visitor=0
+| Home=0
+}}
+{{AmFootballScoreSummaryEntry
+| Quarter=1
+| Time=07:58
+| Team=Auburn
+| DrivePlays=16
+| DriveLength=75
+| DriveTime=6:52
+| Type=RushTD
+| Runner=Robert Turbin 
+| yards=1
+| kickresult=good
+| Kicker=Josh Thompson 
+| Visitor=21
+| Home=14
+}}
+{{AmFootballScoreSummaryEntry
+| Quarter=3
+| Time=11:14
+| Team=Auburn
+| DrivePlays=11
+| DriveLength=65
+| DriveTime=3:46
+| Type=RushTD
+| Runner=Michael Dyer 
+| yards=11
+| kickresult=good
+| Kicker=Cody Parkey 
+| Visitor=24
+| Home=21
+}}
+{{AmFootballScoreSummaryEntry
+| Quarter=3
+| Time=01:57
+| Team=
+| DrivePlays=7
+| DriveLength=72
+| DriveTime=2:55
+| Type=RecTD
+| Receiver=Travante Stallworth 
+| QB=From Barrett Trotter
+| yards=39
+| kickresult=good
+| Kicker=Cody Parkey 
+| Visitor=0
+| Home=0
+}}
+{{AmFootballScoreSummaryEntry
+| Quarter=3
+| Time=11:20
+| Team=Auburn
+| DrivePlays=14
+| DriveLength=80
+| DriveTime=5:37
+| Type=RushTD
+| Runner=Chuckie Keeton 
+| yards=7
+| kickresult=good
+| Kicker=Josh Thompson 
+| Visitor=38
+| Home=28
+}}
+{{AmFootballScoreSummaryEntry
+| Quarter=3
+| Time=02:07
+| Team=Auburn
+| DrivePlays=6
+| DriveLength=65
+| DriveTime=1:31
+| Type=RecTD
+| Receiver=Philip Lutzenkirchen 
+| QB=From Barrett Trotter
+| yards=15
+| kickresult=good
+| Kicker=Cody Parkey 
+| Visitor=38
+| Home=42
+}}
+{{AmFootballScoreSummaryEnd|Visitor=38|Home=42}}
