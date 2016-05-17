@@ -51,7 +51,6 @@ def handle_game_summary(game_id):
     
     for x in summary:
         if not x.findall(".//*[@class='quarter']") == []:
-            print quarter_names[x[0].text], "Quarter found"
             quarter = quarter_names[x[0].text]
         else:
             raw_scoring_play = x
@@ -69,6 +68,12 @@ def parse(scoring_type, scoring_play):
         return ss.FG_Score(scoring_play)
     elif scoring_type == "TD" and not re.search("pass", scoring_play) == None:
         return ss.Pass_Score(scoring_play)
+    elif scoring_type == "TD" and not re.search("Run", scoring_play) == None:
+        return ss.Run_Score(scoring_play)
+    elif scoring_type == "TD" and not re.search("Punt Return", scoring_play) == None:
+        return ss.PR_Score(scoring_play)
+    elif scoring_type == "D2P":
+        return ss.PAT_Conv_Score(scoring_play)
     else:
         return ss.Score()
     
