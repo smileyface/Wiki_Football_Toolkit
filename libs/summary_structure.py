@@ -1,10 +1,5 @@
 import re
-
-class Handler():
-    def scoring_play(self, line):
-        m = re.search('.* (P|p)ass .*')
-        
-
+           
 
 class Score():
     def __init__(self):
@@ -21,7 +16,7 @@ class Score():
         kick_line = line[line.find('(')+1:line.find(')')]
         m = re.search('Kick|PAT failed|PAT blocked', kick_line)
         self.kicker = kick_line.replace(m.group(0), "")
-        self.kick_res = kick_status[m.group(0)]
+        self.kick_res = m.group(0)
 
     def parse_drive(self, line):
         self.drive_plays = re.search('\d+', re.search('\d+ play(s)?', line).group(0)).group(0)
@@ -69,13 +64,15 @@ class IntScore(Score):
         self.parse_kick(datas[2])
         
 class Pass_Score(Score):
-    def parse_actions(self, line):
-        datas = line.split('\t')
-        self.time = datas[1]
-        self.player_name = re.search('\D+', datas[2]).group(0)
-        self.yds = re.search('\d+',datas[2]).group(0)
-        self.qb = re.search('(f|F)rom .*\(', datas[2]).group(0).replace('from ', "").replace(' (', "")
+    def __init__(self, line):
+        self.time = re.search('\d+:\d+', line).group(0)
+        self.player_name = re.search('\D+', line).group(0)
+        self.yds = re.search('\d+',line).group(0)
+        self.qb = re.search('(f|F)rom .*\(', line).group(0).replace('from ', "").replace(' (', "")
         self.parse_kick(line)
+        
+    def __repr__(self):
+        return "{} TD Q{} {} {} from {} {} yds".format(self.team, self.quarter, self.time, self.player_name, self.qb, self.yds)
                
 class Run_Score(Score):
     def parse_actions(self, line):
@@ -86,12 +83,14 @@ class Run_Score(Score):
         self.parse_kick(line)
 
 class FG_Score(Score):
-    def parse_actions(self, line):
-        datas = line.split('\t')
-        self.time = datas[1]
-        self.player_name = re.search('\D+', datas[2]).group(0)
-        self.yds = re.search('\d+',datas[2]).group(0)
+    def __init__(self, line):
+        Score.__init__(self)
+        self.time = re.search('\d+:\d+', line).group(0)
+        self.player_name = re.search('\D+', line).group(0)
+        self.yds = re.search('\d+',line).group(0)
 
+    def __repr__(self):
+        return "{} FG Q{} {} {} {} yds".format(self.team, self.quarter, self.time, self.player_name, self.yds)
 class Fum_Score(Score):
     def parse_actions(self, line):
         datas = line.split('\t')

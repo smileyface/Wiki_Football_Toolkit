@@ -1,3 +1,5 @@
+kick_status = {'Kick':'good', 'PAT failed':'no good', 'PAT blocked':'no good (blocked)'}  
+
 def generate_wikipedia(input_class):
     wiki_string = ""
     class_name = input_class.__class__.__name__
@@ -22,7 +24,7 @@ def generate_wikipedia(input_class):
         wiki_string +="| Other={}{} yard kick return,".format(input_class.player_name, input_class.yds)
         if not input_class.kicker == "":
             wiki_string +=" {}".format(input_class.kicker)
-            wiki_string +="kick {}\n".format(input_class.kick_res)
+            wiki_string +="kick {}\n".format(kick_status[input_class.kick_res])
         else:
             wiki_string +="| 2pt type={}\n".format("")
             wiki_string +="| 2pt result={}\n".format("")
@@ -50,7 +52,7 @@ def generate_wikipedia(input_class):
         self.wiki_string +="| Other={}{} yard punt return,".format(self.player_name, self.yds)
         if not self.kicker == "":
             self.wiki_string +=" {}".format(self.kicker)
-            self.wiki_string +="kick {}\n".format(self.kick_res)
+            self.wiki_string +="kick {}\n".format(kick_status[input_class.kick_res])
         else:
             self.wiki_string +="| 2pt type={}\n".format("")
             self.wiki_string +="| 2pt result={}\n".format("")
@@ -67,7 +69,7 @@ def generate_wikipedia(input_class):
         self.wiki_string +="| Def={}\n".format(self.player_name)
         self.wiki_string +="| yards={}\n".format(self.yds)
         if not self.kicker == "":
-            self.wiki_string +="| kickresult={}\n".format(self.kick_res)
+            self.wiki_string +="| kickresult={}\n".format(kick_status[input_class.kick_res])
             self.wiki_string +="| Kicker={}\n".format(self.kicker)
         else:
             self.wiki_string +="| 2pt type={}\n".format("")
@@ -103,7 +105,7 @@ def generate_wikipedia(input_class):
         self.wiki_string +="| Runner={}\n".format(self.player_name)
         self.wiki_string +="| yards={}\n".format(self.yds)
         if not self.kicker == "":
-            self.wiki_string +="| kickresult={}\n".format(self.kick_res)
+            self.wiki_string +="| kickresult={}\n".format(kick_status[input_class.kick_res])
             self.wiki_string +="| Kicker={}\n".format(self.kicker)
         else:
             self.wiki_string +="| 2pt type={}\n".format("")
@@ -125,7 +127,7 @@ def generate_wikipedia(input_class):
         self.wiki_string +="| QB={}\n".format(self.qb)
         self.wiki_string +="| yards={}\n".format(self.yds)
         if not self.kicker == "":
-            self.wiki_string +="| kickresult={}\n".format(self.kick_res)
+            self.wiki_string +="| kickresult={}\n".format(kick_status[input_class.kick_res])
             self.wiki_string +="| Kicker={}\n".format(self.kicker)
         else:
             self.wiki_string +="| 2pt type={}\n".format("")
@@ -143,7 +145,7 @@ def generate_wikipedia(input_class):
         self.wiki_string +="| Def={}\n".format(self.player_name)
         self.wiki_string +="| yards={}\n".format(self.yds)
         if not self.kicker == "":
-            self.wiki_string +="| kickresult={}\n".format(self.kick_res)
+            self.wiki_string +="| kickresult={}\n".format(kick_status[input_class.kick_res])
             self.wiki_string +="| Kicker={}\n".format(self.kicker)
         else:
             self.wiki_string +="| 2pt type={}\n".format("")
