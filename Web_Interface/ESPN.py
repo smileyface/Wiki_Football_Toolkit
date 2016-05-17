@@ -39,7 +39,10 @@ def handle_game_summary(game_id):
     quarter_names = {"first Quarter": 1, "second Quarter": 2, "third Quarter": 3, "fourth Quarter":4}
     
     summary = get_webpage(espn_url).find(".//*[@class='scoring-summary']")
-    
+
+    if summary == None:
+        summary = get_webpage(espn_url).find(".//*[@class='scoring-summary has-highlights']")
+
     for x in summary:
         if x.tag == "table":
             summary = x[0]
@@ -78,4 +81,4 @@ def parse(scoring_type, scoring_play):
         return ss.Score()
     
 get_team_ids()
-handle_game_summary(400787110)
+handle_game_summary(400787249)

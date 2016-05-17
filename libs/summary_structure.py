@@ -11,12 +11,21 @@ class Score():
         self.team = ""
         self.kicker = ""
         self.quarter = 0
+    
+    def parse_two_point(self, line):
+        two_point_line = re.search("\(\D+\)", line).group(0).replace("(", "").replace(")", "")
         
+        self.two_point_play = None
+
     def parse_kick(self, line):
         kick_line = line[line.find('(')+1:line.find(')')]
         m = re.search('Kick|PAT failed|PAT blocked', kick_line)
+        if m == None:
+            self.parse_two_point(line)
+            return
         self.kicker = kick_line.replace(m.group(0), "")
         self.kick_res = m.group(0)
+
 
     def parse_drive(self, line):
         self.drive_plays = re.search('\d+', re.search('\d+ play(s)?', line).group(0)).group(0)
