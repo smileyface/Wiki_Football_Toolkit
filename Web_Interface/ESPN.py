@@ -10,6 +10,7 @@ from StringIO import StringIO
 import re
 
 team_ids = dict()
+team_names = dict()
 
 def get_webpage(espn_url):
     req = url.Request(espn_url)
@@ -31,16 +32,24 @@ def get_team_ids():
     for x in conferences:
         for y in x:
             id_num = (re.search("\d+", y[0][0].attrib['href'])).group(0)
-            team_ids[id_num] = y[0][0].text
+            team_ids[int(id_num)] = y[0][0].text
+            team_names[y[0][0].text] = int(id_num)
             
-def get_schedule(team_id):
-    espn_url = "http://espn.go.com/college-football/team/_/id/{}".format(team_id)
-    schedule = get_webpage(espn_url).find(".//*[@class='club-schedule']")
-    reg_season = schedule.findall(".//*[@name='&lpos=college-football:teamclubhouse:schedule:regular']")
-    season_list = []
-    for x in reg_season:
-        season_list.append(re.search("\d+", x.attrib['href']).group(0))
-    return season_list
+def get_schedule(team_id, year = None):
+    if year == None:
+        espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}/year/{}/".format(team_id, year)
+    else:
+        espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}".format(team_id)
+    thing = get_webpage(espn_url).find(".//*[@id='showschedule']")[0][0]
+    schedule = thing.findall('tr')[2:]
+    schedule_times = []
+    for x in schedule:
+        print x
+        game_id = x.find(".//*[@class='score']")
+        print game_id
+        schedule_times.append(int())
+    return schedule_times
+    
     
 
 def handle_game_summary(game_id):
@@ -51,7 +60,7 @@ def handle_game_summary(game_id):
 
     if summary == None:
         summary = get_webpage(espn_url).find(".//*[@class='scoring-summary has-highlights']")
-
+    print summary
     for x in summary:
         if x.tag == "table":
             summary = x[0]
@@ -90,14 +99,19 @@ def parse(scoring_type, scoring_play):
         return ss.KR_Score(scoring_play)
     elif not re.search("Interception Return", scoring_play) == None:
         return ss.Int_Score(scoring_play)
+    elif not re.search("Return of Blocked Punt", scoring_play) == None:
+        return ss.Punt_Block_Score(scoring_play)
+    elif scoring_type == "SF":
+        return ss.Team_Safe_Score(scoring_play)
     elif scoring_type == "D2P":
         return ss.PAT_Conv_Score(scoring_play)
     else:
         return ss.Score()
     
 get_team_ids()
-sch = get_schedule(328)
-
-
+sch = get_schedule(team_names["Utah State"], 2015)
+print sch
+'''
 for x in sch:
     handle_game_summary(x)
+'''
