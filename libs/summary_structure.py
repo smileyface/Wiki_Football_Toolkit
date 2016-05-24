@@ -14,7 +14,6 @@ class Score():
     
     def parse_two_point(self, line):
         two_point_line = re.search("\(\D+\)", line).group(0).replace("(", "").replace(")", "")
-        
         self.two_point_play = None
 
     def parse_kick(self, line):
@@ -25,7 +24,6 @@ class Score():
             return
         self.kicker = kick_line.replace(m.group(0), "")
         self.kick_res = m.group(0)
-
 
     def parse_drive(self, line):
         self.drive_plays = re.search('\d+', re.search('\d+ play(s)?', line).group(0)).group(0)
@@ -55,21 +53,19 @@ class Score():
             return teams['Visitor']
         else:
             return teams['Home']
-    def get_wiki():
-        pass
-    def write_wiki(self):
-        with open("output.txt", 'a') as f:
-            f.write(self.wiki_string)
 
-class IntScore(Score):
+
+
+class Int_Score(Score):
     def __init__(self, line):
-        datas = line.split('\t')
-        self.time = datas[1]
-        self.player_name = re.search('\D+', datas[2]).group(0)
-        self.yds = re.search('\d+',datas[2]).group(0)
-        self.visit_score = datas[3]
-        self.home_score = datas[4]
-        self.parse_kick(datas[2])
+        self.time = re.search('\d+:\d+', line).group(0)
+        self.player_name = re.search('\D+', line).group(0)
+        self.yds = re.search('\d+',line).group(0)
+        self.parse_kick(line)
+
+    def __repr__(self):
+        return "{} Int Return Q{} {} {} {} yds".format(self.team, self.quarter, self.time, self.player_name, self.yds)    
+    
         
 class Pass_Score(Score):
     def __init__(self, line):
@@ -100,20 +96,16 @@ class FG_Score(Score):
 
     def __repr__(self):
         return "{} FG Q{} {} {} {} yds".format(self.team, self.quarter, self.time, self.player_name, self.yds)
+    
 class Fum_Score(Score):
-    def parse_actions(self, line):
-        datas = line.split('\t')
-        self.time = datas[1]
-        self.player_name = re.search('\D+', datas[2]).group(0)
-        self.yds = re.search('\d+',datas[2]).group(0)
+    def __init__(self, line):
+        self.time = re.search('\d+:\d+', line).group(0)
+        self.player_name = re.search('\D+', line).group(0)
+        self.yds = re.search('\d+',line).group(0)
         self.parse_kick(line)
-        if(len(datas)>2):
-            self.team = self.get_scoring_team()
-            self.visit_score = datas[3]
-            self.home_score = datas[4]
-            return True
-        else:
-            return False
+        
+    def __repr__(self):
+        return "{} Fumble Return Q{} {} {} {} yds".format(self.team, self.quarter, self.time, self.player_name, self.yds)
 
 class PR_Score(Score):
     def __init__(self, line):
@@ -132,16 +124,15 @@ class PAT_Conv_Score(Score):
         self.yds = re.search('\d+', line).group(0)
     def __repr__(self):
         return "{} PAT Conversion Q{} {} {} {}yds".format(self.team, self.quarter, self.time, self.player_name, self.yds)
+
 class KR_Score(Score):
-    def parse_actions(self, line):
-        datas = line.split('\t')
-        self.time = datas[1]
-        self.player_name = re.search('\D+', datas[2]).group(0)
-        self.yds = re.search('\d+',datas[2]).group(0)
+    def __init__(self, line):
+        self.time = re.search('\d+:\d+', line).group(0)
+        self.player_name = re.search('\D+', line).group(0)
+        self.yds = re.search('\d+',line).group(0)
         self.parse_kick(line)
-        self.visit_score = datas[3]
-        self.home_score = datas[4]
-        self.team = self.get_scoring_team()
+    def __repr__(self):
+        return "{} Kickoff Return Q{} {} {} {}yds".format(self.team, self.quarter, self.time, self.player_name, self.yds)
 
 class Team_Safe_Score(Score):
     def parse_actions(self, line):

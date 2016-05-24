@@ -12,7 +12,6 @@ import re
 team_ids = dict()
 
 def get_webpage(espn_url):
-    print espn_url
     req = url.Request(espn_url)
     try:
         response = url.urlopen(req)
@@ -33,6 +32,16 @@ def get_team_ids():
         for y in x:
             id_num = (re.search("\d+", y[0][0].attrib['href'])).group(0)
             team_ids[id_num] = y[0][0].text
+            
+def get_schedule(team_id):
+    espn_url = "http://espn.go.com/college-football/team/_/id/{}".format(team_id)
+    schedule = get_webpage(espn_url).find(".//*[@class='club-schedule']")
+    reg_season = schedule.findall(".//*[@name='&lpos=college-football:teamclubhouse:schedule:regular']")
+    season_list = []
+    for x in reg_season:
+        season_list.append(re.search("\d+", x.attrib['href']).group(0))
+    return season_list
+    
 
 def handle_game_summary(game_id):
     espn_url = "http://espn.go.com/college-football/game?gameId={}".format(game_id)
@@ -67,18 +76,28 @@ def handle_game_summary(game_id):
             print thing
 
 def parse(scoring_type, scoring_play):
-    if scoring_type == "FG":
+    if not re.search("Field Goal", scoring_play) == None:
         return ss.FG_Score(scoring_play)
-    elif scoring_type == "TD" and not re.search("pass", scoring_play) == None:
+    elif not re.search("pass", scoring_play) == None:
         return ss.Pass_Score(scoring_play)
-    elif scoring_type == "TD" and not re.search("Run", scoring_play) == None:
+    elif not re.search("Run", scoring_play) == None:
         return ss.Run_Score(scoring_play)
-    elif scoring_type == "TD" and not re.search("Punt Return", scoring_play) == None:
+    elif not re.search("Punt Return", scoring_play) == None:
         return ss.PR_Score(scoring_play)
+    elif not re.search("Fumble Return", scoring_play) == None:
+        return ss.Fum_Score(scoring_play)
+    elif not re.search("Kickoff Return", scoring_play) == None:
+        return ss.KR_Score(scoring_play)
+    elif not re.search("Interception Return", scoring_play) == None:
+        return ss.Int_Score(scoring_play)
     elif scoring_type == "D2P":
         return ss.PAT_Conv_Score(scoring_play)
     else:
         return ss.Score()
     
 get_team_ids()
-handle_game_summary(400787249)
+sch = get_schedule(328)
+
+
+for x in sch:
+    handle_game_summary(x)
