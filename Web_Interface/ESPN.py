@@ -12,6 +12,8 @@ import re
 team_ids = dict()
 team_names = dict()
 
+schedule = dict()
+
 def get_webpage(espn_url):
     req = url.Request(espn_url)
     try:
@@ -36,18 +38,19 @@ def get_team_ids():
             team_names[y[0][0].text] = int(id_num)
             
 def get_schedule(team_id, year = None):
+    print year
     if year == None:
-        espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}/year/{}/".format(team_id, year)
-    else:
         espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}".format(team_id)
+    else:
+        espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}/year/{}/".format(team_id, year)
+
     thing = get_webpage(espn_url).find(".//*[@id='showschedule']")[0][0]
     schedule = thing.findall('tr')[2:]
     schedule_times = []
     for x in schedule:
-        print x
         game_id = x.find(".//*[@class='score']")
-        print game_id
-        schedule_times.append(int())
+        if not game_id == None:
+            schedule_times.append(re.search("\d+", game_id[0].attrib['href']).group(0))
     return schedule_times
     
     
@@ -60,7 +63,6 @@ def handle_game_summary(game_id):
 
     if summary == None:
         summary = get_webpage(espn_url).find(".//*[@class='scoring-summary has-highlights']")
-    print summary
     for x in summary:
         if x.tag == "table":
             summary = x[0]
@@ -79,8 +81,8 @@ def handle_game_summary(game_id):
             dataline = details.find(".//*[@class='headline']").text + " " + details.find(".//*[@class='time-stamp']").text
             thing = parse(details.find(".//*[@class='score-type']").text, dataline)
             thing.quarter = quarter
-            scoring_team_id =  re.search('\d+.png', 
-                               raw_scoring_play.find(".//*[@class='logo']")[0].attrib['src']).group(0).replace(".png", "")
+            scoring_team_id =  int(re.search('\d+.png', 
+                               raw_scoring_play.find(".//*[@class='logo']")[0].attrib['src']).group(0).replace(".png", ""))
             thing.team = team_ids[scoring_team_id]
             print thing
 
@@ -109,9 +111,7 @@ def parse(scoring_type, scoring_play):
         return ss.Score()
     
 get_team_ids()
-sch = get_schedule(team_names["Utah State"], 2015)
-print sch
-'''
+sch = get_schedule(team_names["Alabama"], year = 2015)
+
 for x in sch:
     handle_game_summary(x)
-'''
