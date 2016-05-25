@@ -40,40 +40,36 @@ def get_team_ids():
 
 ##TODO: Split this in to two functions            
 def get_schedule(team_id, year = time.strftime("%Y")):
-    if year == None:
-        espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}".format(team_id)
-        year = time.strftime("%Y")
-    else:
-        espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}/year/{}/".format(team_id, year)
+    espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}/year/{}/".format(team_id, year)
     thing = get_webpage(espn_url).find(".//*[@id='showschedule']")[0][0]
     schedule = thing.findall('tr')[2:]
     schedule_times = []
     for x in schedule:
-        date = x[0].text.replace("Sept", "Sep") + " " + str(year)
-        game_time = re.search("\d+:\d+ (AM|PM)", x[2].text)
-        if not game_time == None:
-            print game_time.group(0)
-            time.strptime("{} {}".format(date + game_time), "%a, %b %d %Y")
-            
+        if len(x)>1:
+            date_string = "%a, %b %d %Y"
+            date = x[0].text.replace("Sept", "Sep") + " " + str(year)
+    
+            result_time = x[2].text
+            if not result_time == None:
+                game_time = re.search("\d+:\d+ (AM|PM)", result_time)
+                date += " " + game_time.group(0)
+                date_string += " %I:%M %p"
             game_id = x.find(".//*[@class='score']")
+            
             if not game_id == None:
                 schedule_times.append(re.search("\d+", game_id[0].attrib['href']).group(0))
-            else:
-                schedule_times.append(time.strptime(date, "%a, %b %d %Y"))
-            if x == "TBD":
+            elif x[3].text == "TBD":
                 schedule_times.append(x)
             else:
-                print "Caught a non-date item, {}".format(x[0].text)
+                schedule_times.append(time.strptime(date, date_string))
+        
     return schedule_times
-    
-    
 
 def handle_game_summary(game_id):
     if type(game_id) == time.struct_time:
-        print "Game hasn't been played"
         return
     espn_url = "http://espn.go.com/college-football/game?gameId={}".format(game_id)
-    quarter_names = {"first Quarter": 1, "second Quarter": 2, "third Quarter": 3, "fourth Quarter":4}
+    quarter_names = {"first Quarter": 1, "second Quarter": 2, "third Quarter": 3, "fourth Quarter":4, "Overtime": "OT"}
     
     summary = get_webpage(espn_url).find(".//*[@class='scoring-summary']")
 
@@ -94,15 +90,18 @@ def handle_game_summary(game_id):
         else:
             raw_scoring_play = x
             details = raw_scoring_play.find(".//*[@class='game-details']")[0]
-            dataline = details.find(".//*[@class='headline']").text + " " + details.find(".//*[@class='time-stamp']").text
-            thing = parse(details.find(".//*[@class='score-type']").text, dataline)
+            dataline = details.find(".//*[@class='headline']").text + " " 
+            time_stamp = details.find(".//*[@class='time-stamp']").text
+            if not time_stamp == None:
+                dataline += time_stamp
+            thing = parse_summary_current(details.find(".//*[@class='score-type']").text, dataline)
             thing.quarter = quarter
             scoring_team_id =  int(re.search('\d+.png', 
                                raw_scoring_play.find(".//*[@class='logo']")[0].attrib['src']).group(0).replace(".png", ""))
             thing.team = team_ids[scoring_team_id]
             print thing
 
-def parse(scoring_type, scoring_play):
+def parse_summary_current(scoring_type, scoring_play):
     if not re.search("Field Goal", scoring_play) == None:
         return ss.FG_Score(scoring_play)
     elif not re.search("pass", scoring_play) == None:
@@ -127,7 +126,11 @@ def parse(scoring_type, scoring_play):
         return ss.Score()
     
 get_team_ids()
-sch = get_schedule(team_names["Utah State"])
+sch = get_schedule(team_names["Utah State"], 2014)
+
+print sch[0]
 
 for x in sch:
+    print x
     handle_game_summary(x)
+

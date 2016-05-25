@@ -1,5 +1,6 @@
 import re
            
+##TODO: handle pre 2014 game summaries
 
 class Score():
     def __init__(self):
@@ -69,7 +70,10 @@ class Int_Score(Score):
         
 class Pass_Score(Score):
     def __init__(self, line):
-        self.time = re.search('\d+:\d+', line).group(0)
+        if not re.search('\d+:\d+', line) == None:
+            self.time = re.search('\d+:\d+', line).group(0)
+        else:
+            self.time = ""
         self.player_name = re.search('\D+', line).group(0)
         self.yds = int(re.search('\d+',line).group(0))
         self.qb = re.search('(f|F)rom .*\(', line).group(0).replace('from ', "").replace(' (', "")
@@ -85,7 +89,7 @@ class Run_Score(Score):
         self.yds = int(re.search('\d+',line).group(0))
         self.parse_kick(line)
     def __repr__(self):
-        return "{} TD Q{} {} {} {} yds".format(self.team, self.quarter, self.time, self.player_name, self.yds)
+        return "{} TD Q{} {} {} {} yds".format(str(self.team), self.quarter, self.time, str(self.player_name), self.yds)
 
 class FG_Score(Score):
     def __init__(self, line):
