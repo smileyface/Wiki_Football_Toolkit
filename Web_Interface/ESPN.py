@@ -8,11 +8,12 @@ import urllib2 as url
 from lxml import etree
 from StringIO import StringIO
 import re
+import time
 
 team_ids = dict()
 team_names = dict()
 
-schedule = dict()
+schedule = []
 
 def get_webpage(espn_url):
     req = url.Request(espn_url)
@@ -36,26 +37,41 @@ def get_team_ids():
             id_num = (re.search("\d+", y[0][0].attrib['href'])).group(0)
             team_ids[int(id_num)] = y[0][0].text
             team_names[y[0][0].text] = int(id_num)
-            
-def get_schedule(team_id, year = None):
-    print year
+
+##TODO: Split this in to two functions            
+def get_schedule(team_id, year = time.strftime("%Y")):
     if year == None:
         espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}".format(team_id)
+        year = time.strftime("%Y")
     else:
         espn_url = "http://espn.go.com/college-football/team/schedule/_/id/{}/year/{}/".format(team_id, year)
-
     thing = get_webpage(espn_url).find(".//*[@id='showschedule']")[0][0]
     schedule = thing.findall('tr')[2:]
     schedule_times = []
     for x in schedule:
-        game_id = x.find(".//*[@class='score']")
-        if not game_id == None:
-            schedule_times.append(re.search("\d+", game_id[0].attrib['href']).group(0))
+        date = x[0].text.replace("Sept", "Sep") + " " + str(year)
+        game_time = re.search("\d+:\d+ (AM|PM)", x[2].text)
+        if not game_time == None:
+            print game_time.group(0)
+            time.strptime("{} {}".format(date + game_time), "%a, %b %d %Y")
+            
+            game_id = x.find(".//*[@class='score']")
+            if not game_id == None:
+                schedule_times.append(re.search("\d+", game_id[0].attrib['href']).group(0))
+            else:
+                schedule_times.append(time.strptime(date, "%a, %b %d %Y"))
+            if x == "TBD":
+                schedule_times.append(x)
+            else:
+                print "Caught a non-date item, {}".format(x[0].text)
     return schedule_times
     
     
 
 def handle_game_summary(game_id):
+    if type(game_id) == time.struct_time:
+        print "Game hasn't been played"
+        return
     espn_url = "http://espn.go.com/college-football/game?gameId={}".format(game_id)
     quarter_names = {"first Quarter": 1, "second Quarter": 2, "third Quarter": 3, "fourth Quarter":4}
     
@@ -111,7 +127,7 @@ def parse(scoring_type, scoring_play):
         return ss.Score()
     
 get_team_ids()
-sch = get_schedule(team_names["Alabama"], year = 2015)
+sch = get_schedule(team_names["Utah State"])
 
 for x in sch:
     handle_game_summary(x)
